@@ -15,15 +15,6 @@ All buttons and sprites are done with 2dAnimatable Class
 Start Menu - 
     Clicking start button leads to prompt for user input, searches wikipedia, uses WikiDungeonCrawler to generate 3 links, and puts them into an array.
     Sends the player to the game screen.
-Game screen - 
-    Displays rooms from the links in the WikiDungeonCrawler link array.
-    Displays doors for each of the 3 links returned by the WikiDungeonCrawler.
-    Enemies spawn in the room, and the player fights them by moving with keys and clicking (to be replaced by pokemonesque fighting screen time permitting). 
-    When enemies are defeated, article contents are listed visually by clicking on a podium sprite in the room center and doors to new articles appear.
-Map menu - 
-    Displays map based on WikiDungeonCrawler link array.
-    Has buttons to return to the game screen.
-    Functions as a pause screen
-    Exit button
+Game Loop - 
 Exit loop
     Quits the game with pygame functions
