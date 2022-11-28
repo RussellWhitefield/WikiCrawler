@@ -12,12 +12,13 @@ class TextDisplay:
         self.color = color
         #Text sizing
         formatted_text = ""
-        for i in text:
-            
-            if len(text[0:i])<self.width:
-                formatted_text.append(i)
+        lastpos = 0
+        for index,i in enumerate(text):    
+            if index<self.width:
+                formatted_text += i
             else:
-                formatted_text.append("/n" + "-"+ i)
+                lastpos = index
+                formatted_text += ("/n" + "-"+ i)
         #Fond and rendering
         self.font = pygame.font.SysFont("timesnewroman", fontsize)
         self.text = self.font.render(formatted_text, True, self.color)
@@ -25,10 +26,12 @@ class TextDisplay:
     def update(self, text):
         #Text sizing
         formatted_text = ""
-        for i in text:
-            if len(text[0:i])<self.width:
-                formatted_text.append(i)
+        lastpos = 0
+        for index,i in enumerate(text):    
+            if index<self.width:
+                formatted_text += i
             else:
-                formatted_text.append("/n" + "-"+ i)
+                lastpos = index
+                formatted_text += ("/n" + "-"+ i)
         #Updating text
         self.text = self.font.render(formatted_text, True, self.color, )

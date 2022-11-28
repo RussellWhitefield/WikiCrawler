@@ -2,6 +2,7 @@ import pygame, sys, time, csv
 import pandas as pd
 
 from bin import Animatable2d
+from bin import TextDisplay
 
 '''
 Parts of the game
@@ -35,9 +36,10 @@ class Controller:
         self.tick = 60
         self.last_time = time.time()
         self.zoom_toggle = 1
+        pygame.font.init()
 
         #start_menu
-
+        
         start_button_offset = [-self.center_w/1.8,0]
         start_exit_button_offset = [-self.center_w/1.8,200]
 
@@ -57,10 +59,10 @@ class Controller:
         left_window_offset = [-self.center_w/2,-self.center_h/4]
         right_window_offset = [self.center_w/2,-self.center_h/4]
         question_bar_offset = [0,200]
-        left_question_button = [-160,200]
-        right_question_button = [150,200]
+        left_question_button_offset = [-150,200]
+        right_question_button_offset = [150,200]
         
-        game_offsets = [left_window_offset,right_window_offset, question_bar_offset, left_question_button, right_question_button]
+        game_offsets = [left_window_offset,right_window_offset, question_bar_offset, left_question_button_offset, right_question_button_offset]
         for i in game_offsets:
             i[0] += self.center_w
             i[1] += self.center_h
@@ -69,9 +71,12 @@ class Controller:
         self.left_window = Animatable2d.Object(["assets/question_window.png"], 1, 1,left_window_offset[0],left_window_offset[1])
         self.right_window = Animatable2d.Object(["assets/question_window.png"], 1, 1,right_window_offset[0],right_window_offset[1])
         self.question_bar = Animatable2d.Object(["assets/question_bar.png"], 1, 1,question_bar_offset[0],question_bar_offset[1])
-        self.left_question_button = Animatable2d.Object(["assets/guess_button1.png","assets/guess_button2.png"], 1, 1,left_question_button[0],left_question_button[1])
-        self.right_question_button = Animatable2d.Object(["assets/guess_button1.png","assets/guess_button2.png"], 1, 1,right_question_button[0],right_question_button[1])
+        self.left_question_button = Animatable2d.Object(["assets/guess_button1.png","assets/guess_button2.png"], 1, 1,left_question_button_offset[0],left_question_button_offset[1])
+        self.right_question_button = Animatable2d.Object(["assets/guess_button1.png","assets/guess_button2.png"], 1, 1,right_question_button_offset[0],right_question_button_offset[1])
         self.button_click_delta = 0
+
+        self.left_text = TextDisplay.TextDisplay()
+        self.right_text = TextDisplay.TextDisplay()
 
         self.game_group = pygame.sprite.Group()
         self.game_group.add(self.left_window, self.right_window, self.question_bar, self.left_question_button, self.right_question_button)
@@ -140,6 +145,8 @@ class Controller:
                 if event.type == pygame.QUIT:
                     self.STATE = "quit"
             self.game_group.draw(self.display)
+            self.display.blit(self.left_text.text,(-100,0))
+            self.display.blit(self.right_text.text,(100,0))
             self.window.blit(self.display, (0,0))
             pygame.display.update()
             self.clock.tick(self.tick)
