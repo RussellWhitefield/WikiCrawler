@@ -56,30 +56,30 @@ class Controller:
         self.start_group.add(self.start_button, self.start_exit_button)
 
         #game_screen
-        left_window_offset = [-self.center_w/2,-self.center_h/4]
-        right_window_offset = [self.center_w/2,-self.center_h/4]
+        window_offset_left = [-self.center_w/2,-self.center_h/4]
+        window_offset_right = [self.center_w/2,-self.center_h/4]
         question_bar_offset = [0,200]
-        left_question_button_offset = [-150,200]
-        right_question_button_offset = [150,200]
+        question_button_offset_left = [-150,200]
+        question_button_offset_right = [150,200]
         
-        game_offsets = [left_window_offset,right_window_offset, question_bar_offset, left_question_button_offset, right_question_button_offset]
+        game_offsets = [window_offset_left,window_offset_right, question_bar_offset, question_button_offset_left, question_button_offset_right]
         for i in game_offsets:
             i[0] += self.center_w
             i[1] += self.center_h
 
         self.game_background = Animatable2d.Object(["assets/game_background.png"], self.display_w, self.display_h,0,0,False)
-        self.left_window = Animatable2d.Object(["assets/question_window.png"], 1, 1,left_window_offset[0],left_window_offset[1])
-        self.right_window = Animatable2d.Object(["assets/question_window.png"], 1, 1,right_window_offset[0],right_window_offset[1])
+        self.window_left = Animatable2d.Object(["assets/question_window.png"], 1, 1,window_offset_left[0],window_offset_left[1])
+        self.window_right = Animatable2d.Object(["assets/question_window.png"], 1, 1,window_offset_right[0],window_offset_right[1])
         self.question_bar = Animatable2d.Object(["assets/question_bar.png"], 1, 1,question_bar_offset[0],question_bar_offset[1])
-        self.left_question_button = Animatable2d.Object(["assets/guess_button1.png","assets/guess_button2.png"], 1, 1,left_question_button_offset[0],left_question_button_offset[1])
-        self.right_question_button = Animatable2d.Object(["assets/guess_button1.png","assets/guess_button2.png"], 1, 1,right_question_button_offset[0],right_question_button_offset[1])
+        self.question_button_left = Animatable2d.Object(["assets/guess_button1.png","assets/guess_button2.png"], 1, 1,question_button_offset_left[0],question_button_offset_left[1])
+        self.question_button_right = Animatable2d.Object(["assets/guess_button1.png","assets/guess_button2.png"], 1, 1,question_button_offset_right[0],question_button_offset_right[1])
         self.button_click_delta = 0
 
-        self.left_text = TextDisplay.TextDisplay()
-        self.right_text = TextDisplay.TextDisplay()
+        self.text_left= TextDisplay.TextDisplay(self.display, x = self.center_w-self.center_w/2-140, y = self.center_h-240)
+        self.text_right= TextDisplay.TextDisplay(self.display, x = self.center_w+self.center_w/2-140, y = self.center_h-240)
 
         self.game_group = pygame.sprite.Group()
-        self.game_group.add(self.left_window, self.right_window, self.question_bar, self.left_question_button, self.right_question_button)
+        self.game_group.add(self.window_left, self.window_right, self.question_bar, self.question_button_left, self.question_button_right)
 
         #end_screen
 
@@ -127,28 +127,28 @@ class Controller:
 
         while self.STATE == "game":
             if self.button_click_delta == 0:
-                self.right_question_button.setFrame(0)
-                self.left_question_button.setFrame(0)
+                self.question_button_right.setFrame(0)
+                self.question_button_left.setFrame(0)
             else:
                 self.button_click_delta -=1
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     #buttons
-                    if(self.right_question_button.rect.collidepoint(event.pos)):
-                        self.right_question_button.setFrame(1)
+                    if(self.question_button_right.rect.collidepoint(event.pos)):
+                        self.question_button_right.setFrame(1)
                         self.button_click_delta = 10
                         #Add guessing functionality
-                    if(self.left_question_button.rect.collidepoint(event.pos)):
-                        self.left_question_button.setFrame(1)
+                    if(self.question_button_left.rect.collidepoint(event.pos)):
+                        self.question_button_left.setFrame(1)
                         self.button_click_delta = 10
                         #Add guessing functionality
                 if event.type == pygame.QUIT:
                     self.STATE = "quit"
-            self.game_group.draw(self.display)
-            self.display.blit(self.left_text.text,(-100,0))
-            self.display.blit(self.right_text.text,(100,0))
-            self.window.blit(self.display, (0,0))
-            pygame.display.update()
+                self.game_group.draw(self.display)
+                self.text_left.render()
+                self.text_right.render()
+                self.window.blit(self.display, (0,0))
+                pygame.display.update()
             self.clock.tick(self.tick)
             
     def end_screen_loop(self):
