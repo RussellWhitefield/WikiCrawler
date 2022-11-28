@@ -14,11 +14,12 @@ class TextDisplay:
         formatted_text = ""
         lastpos = 0
         for index,i in enumerate(text):    
-            if index<self.width:
+            if index-lastpos<self.width:
                 formatted_text += i
             else:
                 lastpos = index
-                formatted_text += ("/n" + "-"+ i)
+                formatted_text += ("\n" + "-"+ i)
+        print(formatted_text)
         #Fond and rendering
         self.font = pygame.font.SysFont("timesnewroman", fontsize)
         self.text = self.font.render(formatted_text, True, self.color)
@@ -32,6 +33,6 @@ class TextDisplay:
                 formatted_text += i
             else:
                 lastpos = index
-                formatted_text += ("/n" + "-"+ i)
+                formatted_text += ("\n" + "-"+ i)
         #Updating text
         self.text = self.font.render(formatted_text, True, self.color, )
