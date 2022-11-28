@@ -1,4 +1,4 @@
-# WikiCrawler
+# WikiQuiz
 Respository for the HARP151 Group Project with Kaitlyn Matthews,  Russell Whitefield, Dion Cenalia, Nashara Marrow, Preston Muirhead, Samuel Ramos (Fall 2022)
 
 We want to create a research tool that can gamify research and can map out topics of interest in an interesting way. 
