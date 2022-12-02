@@ -48,7 +48,7 @@ class Controller:
             i[0] += self.center_w
             i[1] += self.center_h
         
-        self.start_background = Animatable2d.Object(["assets/start_background.png"], self.display_w, self.display_h,0,0, False)
+        self.start_background = Animatable2d.Object(["assets/start_background.png"], self.display_w, self.display_h,0,0, getres = False)
         self.start_button = Animatable2d.Object(["assets/start_button.png","assets/start_button1.png"],1,1,start_button_offset[0],start_button_offset[1])
         self.start_exit_button = Animatable2d.Object(["assets/exit_button.png","assets/exit_button1.png"],1,1,start_exit_button_offset[0], start_exit_button_offset[1])
 
@@ -67,7 +67,7 @@ class Controller:
             i[0] += self.center_w
             i[1] += self.center_h
 
-        self.game_background = Animatable2d.Object(["assets/game_background.png"], self.display_w, self.display_h,0,0,False)
+        self.game_background = Animatable2d.Object(["assets/game_background.png"], self.display_w, self.display_h,0,0,getres = False)
         self.window_left = Animatable2d.Object(["assets/question_window.png"], 1, 1,window_offset_left[0],window_offset_left[1])
         self.window_right = Animatable2d.Object(["assets/question_window.png"], 1, 1,window_offset_right[0],window_offset_right[1])
         self.question_bar = Animatable2d.Object(["assets/question_bar.png"], 1, 1,question_bar_offset[0],question_bar_offset[1])
@@ -145,6 +145,7 @@ class Controller:
                 if event.type == pygame.QUIT:
                     self.STATE = "quit"
                 self.game_group.draw(self.display)
+                
                 self.text_left.render()
                 self.text_right.render()
                 self.window.blit(self.display, (0,0))

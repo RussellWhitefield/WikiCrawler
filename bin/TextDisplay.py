@@ -5,7 +5,7 @@ Class displays text to a certain width and shifts to new lines, and allows updat
 '''
 
 class TextDisplay:
-    def __init__(self, surface, text = "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Amet libero aliquam eius provident mollitia voluptatibus. Eos, eligendi quasi libero autem quo in velit molestias fugit distinctio rerum soluta corporis laudantium, consequuntur sequi? Aspernatur magni recusandae maiores id distinctio, debitis ipsam inventore autem sapiente doloremque, vitae facilis laboriosam! Nesciunt, quia ad!", width = 32, maxlines = 10, lineheight = 15, fontsize = 20, color = (0,0,0), x = 0, y = 0):
+    def __init__(self, surface, text = "test", width = 32, maxlines = 10, lineheight = 15, fontsize = 20, color = (0,0,0), x = 0, y = 0):
         #Variables
         self.surface = surface
         self.width = width
@@ -23,13 +23,14 @@ class TextDisplay:
         for index,i in enumerate(text):    
             if index+1-lastpos<self.width:
                 textline += i
-            elif len(self.textlines)<maxlines:
+                if index==len(text)-1:
+                    self.textlines.append(textline) 
+            elif len(self.textlines)<self.maxlines:
                 lastpos = index
                 textline += i
-                print(textline)
                 self.textlines.append(textline)
                 textline = ""
-        
+
     def update(self,text):
         #Text sizing
         textline = ""
@@ -38,7 +39,9 @@ class TextDisplay:
         for index,i in enumerate(text):    
             if index+1-lastpos<self.width:
                 textline += i
-            else:
+                if index==len(text)-1:
+                    self.textlines.append(textline) 
+            elif len(self.textlines)<self.maxlines:
                 lastpos = index
                 textline += i
                 self.textlines.append(textline)
