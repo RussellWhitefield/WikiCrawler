@@ -1,5 +1,4 @@
-import Controller
-import info
+from bin import Controller
 
 answer = 1
 

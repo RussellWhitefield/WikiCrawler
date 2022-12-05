@@ -78,7 +78,8 @@ class Wikipedia:
                     else:
                         a_links.append(j.get("href"))
                         ## Grabbing the links from every  tag.
-        return (a_links, len(a_links))
+        #return (a_links, len(a_links))
+        return a_links
         #print(a_links)
         #print(len(a_links))
         
@@ -87,14 +88,34 @@ class Wikipedia:
         site = requests.get(f"https://en.wikipedia.org{address}").text
         soupsite = BeautifulSoup(site, "lxml")
         
-        div = soupsite.find("div", class_="toc")
+
+        #div = soupsite.find("div", class_="toc")
+
+        #if div == None:
+        div = soupsite.find("div", class_="vector-body")
+            #print("THIS IF STATEMENT HAPPENED")
+        summary = div.find("p", class_="").text.strip()
+        #print(summary)
+        #else:
+         #   summary = div.find_previous_siblings("p")
+          #  print("All is good")
+
+
+
         ## Wikipedia universally structures its webpages so that a "div" or section with the class "toc" represents the Table of Contents.
         ## Naturally, everything paragraph above the Table of Contents should be the summary.
-        summary = div.find_previous_siblings("p")
-        for i in list(reversed(summary)):
+        
+        
+        #summary = div.find_previous_siblings("p")
+
+
+        #sum = ""
+        #for i in list(reversed(summary)):
             ## I use "reversed()" because the ".find_previous_siblings()" method reads bottom to top,
             ## which returns the summary backwards.
-            print(i.text.strip())
+            #print(i.text.strip())
+         #   sum += i.text.strip()
+        return summary
         
     def randomlinks(self, iterations):
         address = f"/wiki/{self.search_term}"
@@ -200,6 +221,21 @@ def wiki_page(page):
 def getLinks(wiki):
     wiki.links()[1]
 
+def common_links(search_term1, search_term2):
+    room_one = Wikipedia(search_term1)
+    room_two = Wikipedia(search_term2)
+    
+    links_one = room_one.links()
+    links_two = room_two.links()
+    
+    if len(links_one) > len(links_two):
+        for i in links_one:
+            if i in links_two:
+                print(i)
+    else:
+        for i in links_two:
+            if i in links_one:
+                print(i) 
 
 """       
 def dungeon_crawler(search_term, seed):
