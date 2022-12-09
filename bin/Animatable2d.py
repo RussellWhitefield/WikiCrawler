@@ -11,7 +11,7 @@ class Object(pygame.sprite.Sprite):
         self.img_array = img_array #image filename array
         self.x = int(xpos)
         self.y = int(ypos)
-        self.image = pygame.image.load(self.img_array[start_frame]).convert()
+        self.image = pygame.image.load(self.img_array[start_frame]).convert_alpha()
         if(getres):
             self.width = int(self.image.get_size()[0]*w)
             self.height = int(self.image.get_size()[1]*h)
@@ -39,7 +39,7 @@ class Object(pygame.sprite.Sprite):
             self.current_frame += 1
         else:
             self.current_frame = 0
-        self.image = pygame.image.load(self.img_array[self.current_frame]).convert()
+        self.image = pygame.image.load(self.img_array[self.current_frame]).convert_alpha()
         self.image = pygame.transform.scale(self.image,(self.width,self.height))
         self.rect = self.image.get_rect()
         self.rect.center = (self.x,self.y)
