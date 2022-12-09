@@ -61,21 +61,15 @@ class Controller:
         self.start_group.add(self.start_button, self.start_exit_button)
 
         #game_screen
-        window_offset_left = [-self.center_w/2,-self.center_h/4]
-        window_offset_right = [self.center_w/2,-self.center_h/4]
-        question_bar_offset = [0,200]
         question_button_offset_left = [-150,200]
         question_button_offset_right = [150,200]
         
-        game_offsets = [window_offset_left,window_offset_right, question_bar_offset, question_button_offset_left, question_button_offset_right]
+        game_offsets = [question_button_offset_left, question_button_offset_right]
         for i in game_offsets:
             i[0] += self.center_w
             i[1] += self.center_h
 
         self.game_background = Animatable2d.Object(["assets/game_background.png"], self.display_w, self.display_h,0,0,False)
-        self.window_left = Animatable2d.Object(["assets/question_window.png"], 1, 1,window_offset_left[0],window_offset_left[1])
-        self.window_right = Animatable2d.Object(["assets/question_window.png"], 1, 1,window_offset_right[0],window_offset_right[1])
-        self.question_bar = Animatable2d.Object(["assets/question_bar.png"], 1, 1,question_bar_offset[0],question_bar_offset[1])
         self.question_button_left = Animatable2d.Object(["assets/guess_button1.png","assets/guess_button2.png"], 1, 1,question_button_offset_left[0],question_button_offset_left[1])
         self.question_button_right = Animatable2d.Object(["assets/guess_button1.png","assets/guess_button2.png"], 1, 1,question_button_offset_right[0],question_button_offset_right[1])
         self.button_click_delta = 0
@@ -92,7 +86,7 @@ class Controller:
 
 
         self.game_group = pygame.sprite.Group()
-        self.game_group.add(self.window_left, self.window_right, self.question_bar, self.question_button_left, self.question_button_right)
+        self.game_group.add(self.question_button_left, self.question_button_right)
 
         #end_screen
 
