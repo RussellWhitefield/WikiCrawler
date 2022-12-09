@@ -65,8 +65,9 @@ class Controller:
         #game_screen
         question_button_offset_left = [-self.center_w/2,self.center_h/1.8]
         question_button_offset_right = [self.center_w/2,self.center_h/1.8]
-        
-        game_offsets = [question_button_offset_left, question_button_offset_right]
+        caticon_offset = [-100,-50]
+
+        game_offsets = [question_button_offset_left, question_button_offset_right,caticon_offset]
         for i in game_offsets:
             i[0] += self.center_w
             i[1] += self.center_h
@@ -76,7 +77,7 @@ class Controller:
         self.question_button_right = Animatable2d.Object(["assets/guess_button.png","assets/guess_button1.png"], 5, 5,question_button_offset_right[0],question_button_offset_right[1])
         self.button_click_delta = 0
 
-        self.caticon = pygame.image.load("assets/Caticon.png")       
+        self.caticon = Animatable2d.Object(["assets/Caticon.png"], 5, 5, caticon_offset[0],caticon_offset[1])      
 
         self.text_left= TextDisplay.TextDisplay(self.display, text="", maxlines = 17, x = self.center_w-self.center_w/2-140, y = self.center_h-240)
         self.text_right= TextDisplay.TextDisplay(self.display, text="", maxlines = 17, x = self.center_w+self.center_w/2-140, y = self.center_h-240)
@@ -89,6 +90,8 @@ class Controller:
 
         self.game_group = pygame.sprite.Group()
         self.game_group.add(self.question_button_left, self.question_button_right)
+        self.win_group = pygame.sprite.Group()
+        self.win_group.add(self.caticon)
 
         #end_screen
 
@@ -138,11 +141,6 @@ class Controller:
             self.wikiimage.nextFrame()
 
     def game_screen_loop(self, ans = 1, start1 = "cat", start2 = "dog"):
-
-        print("THIS IS THE LOOP HAPPENING")
-
-        self.display.blit(self.game_background.image, self.game_background.rect.center)
-
         # self.health: lives = 3 
         # self.correct: num_correct = 0
         # round_count = 1
@@ -150,42 +148,37 @@ class Controller:
         #name of the wiki pages:
         page1 = start1
         page2 = start2
-        #game_over = False
 
         wiki1 = info.Wikipedia("Cat")
         wiki2 = info.Wikipedia("Dog")
-
-        #game = Controller.Controller(page1 + "\n" + wiki1.summary(), page2 + "\n" + wiki2.summary())
-
-        #game.start_menu_loop()
 
         answer = ans
         iteration = 150
         round_count = 1
         proceed = False
-        #self.set_text_left("this is test text this is test text this is test text this is test text this is test text this is test text")
-        #self.set_text_right("this is test text this is test text this is test text this is test text this is test text this is test text")
+        
         self.text_update(self.text_left, wiki1.summary())
         self.text_update(self.text_right, wiki2.summary())
         self.text_update(self.text_title1, page1)
         self.text_update(self.text_title2, page2)
         self.text_update(self.stats, "Guess Which Wikipedia      Article has more links to other Articles!"+" "*26+"           Try to Guess right 5 times before losing all of your health!"+" "*((26-7) + 26)+"Health: " + str(self.health) + " "*16 + "Number Guessed Correctly:" + str(self.correct))
 
+        debug = True
 
+        #Background Draw Function
+        self.display.blit(self.game_background.image, self.game_background.rect.center)
 
         while self.STATE == "game":
+            if debug:
+                print("Game Loop Start")
+                
             if (self.health < 0):
                 self.health = 0
 
             if (round_count != 1 and self.health > 0 and self.correct < 5):
                 iteration += 1
-                self.display.blit(self.game_background.image, self.game_background.rect.center)
-                self.game_group.draw(self.display)
-                self.window.blit(self.display, (0,0))
                 page1 = rand_links1
                 page2 = rand_links2
-                page1 += " "*30 #this is temp until i get the code
-                page2 += " "*30
                 self.text_update(self.text_left, wiki1.summary())
                 self.text_update(self.text_right, wiki2.summary())
                 self.text_update(self.text_title1, page1)
@@ -199,85 +192,70 @@ class Controller:
                 self.question_button_left.setFrame(0)
             else:
                 self.button_click_delta -=1
+            if debug:
+                print("Pre-Event complete")
+
+            #Button handling
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    #buttons
+                    #Background Draw Function
+                    self.display.blit(self.game_background.image, self.game_background.rect.center)
+                    #Guessing functionality
                     if(self.question_button_right.rect.collidepoint(event.pos) and answer == 2 and iteration > 7):
                         self.question_button_right.setFrame(1)
-                        self.button_click_delta = 10
+                        self.button_click_delta = 5
                         self.correct += 1
-                        #self.STATE = None
-                        print(self.STATE)
                         proceed = True
                         iteration = 0
-                        #Add guessing functionality
+                    
                     elif(self.question_button_left.rect.collidepoint(event.pos) and answer == 1 and iteration > 7):
                         self.question_button_left.setFrame(1)
-                        self.button_click_delta = 10
+                        self.button_click_delta = 5
                         self.correct += 1
-                        #self.STATE = None
-                        print(self.STATE)
                         proceed = True
                         iteration = 0
-                        #Add guessing functionality
+                        
                     elif(self.question_button_left.rect.collidepoint(event.pos) and answer == 2 and iteration > 7): 
                         self.question_button_right.setFrame(1)
-                        self.button_click_delta = 10
+                        self.button_click_delta = 5
                         self.health -= 1
-                        #self.STATE = None
                         proceed = True
                         iteration = 0
-                        print(self.STATE)
                     elif(self.question_button_right.rect.collidepoint(event.pos) and answer == 1 and iteration > 7): 
                         self.question_button_right.setFrame(1)
                         self.button_click_delta = 10
                         self.health -= 1
-                        #self.STATE = None
                         proceed = True
                         iteration = 0
-                        print(self.STATE)
                 if event.type == pygame.QUIT:
                     self.STATE = "quit"
-                self.game_group.draw(self.display)
-                self.text_left.render()
-                self.text_right.render()
-                self.text_title1.render()
-                self.text_title2.render()
-                self.stats.render()
-                self.window.blit(self.display, (0,0))
-                pygame.display.update()
-            self.clock.tick(self.tick)
+            if debug:
+                print("Events complete")
 
+            #Health handling
             if (self.health <= 0):
                 self.stats = TextDisplay.TextDisplay(self.display, text="", width = 27, x = self.center_w-135, y = self.center_h-240, fontsize=35)
+                #Background Draw Function
                 self.display.blit(self.game_background.image, self.game_background.rect.center)
-                self.game_group.draw(self.display)
-                self.window.blit(self.display, (0,0))
                 self.text_update(self.stats, "You Lose!"+ " "*(int((26-4)*3.2)) + "Health: " + str(self.health) + " "*(int(16*4.35)) + "Number Guessed"+" "*(int(12*3.2))+"Correctly:" + str(self.correct))
                 #self.STATE = "end"
             elif (self.correct >= 5):
                 self.stats = TextDisplay.TextDisplay(self.display, text="", width = 27, x = self.center_w-135, y = self.center_h-240, fontsize=35)
+                #Background Draw Function
                 self.display.blit(self.game_background.image, self.game_background.rect.center)
-                self.game_group.draw(self.display)
-                self.window.blit(self.display, (0,0))
+                self.win_group.draw(self.display)
                 self.text_update(self.stats, "You Win!" + " "*(int((26-3)*3.1)) + "Health: " + str(self.health) + " "*(int(16*4.35)) + "Number Guessed"+" "*(int(12*3.2))+"Correctly:" + str(self.correct))
-                
-                self.window.blit(self.caticon,(50, 50))
-                pygame.display.update()                                     #CATICON!
+                #CATICON!
+            if debug:
+                print("Health handling complete")
 
-
-            wiki1 = info.Wikipedia(page1.strip())
-            wiki2 = info.Wikipedia(page2.strip()) #this is temp, get rid of strip
-
+            #New Article Generation
             if (proceed):
                 print(f"Health: {self.health}")
                 print(f"Num Correct: {self.correct}")
 
                 links1 = wiki1.links()[1]
                 links2 = wiki2.links()[1]
-
-                #print(f"LINKS 1: {links1}")
-                #print(f"WIKI: {wiki1}")
 
                 #Selects a random link from one of the pages:
                 rand_links1 = wiki1.randomlinks(1)[0][0]
@@ -305,8 +283,21 @@ class Controller:
 
                 round_count += 1
                 proceed = False
-            print(iteration)
-            
+            if debug:
+                print("Proceed complete")
+
+            #Sprite Draw functions
+            self.game_group.draw(self.display)
+            self.text_left.render()
+            self.text_right.render()
+            self.text_title1.render()
+            self.text_title2.render()
+            self.stats.render()
+            self.window.blit(self.display, (0,0))
+            pygame.display.update()
+            self.clock.tick(self.tick)
+            if debug:
+                print("Draw complete")
             
     def end_screen_loop(self):
         while self.STATE == "end":
