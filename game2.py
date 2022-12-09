@@ -9,3 +9,7 @@ game = Controller.Controller()
 
 game.start_menu_loop()
 game.game_screen_loop(answer, page1, page2)
+print("ok")
+
+
+#game.mainloop(answer, page1, page2)
