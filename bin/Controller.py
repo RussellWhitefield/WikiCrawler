@@ -34,7 +34,7 @@ class Controller:
         self.center_w = self.display_w/2
         self.center_h = self.display_h/2
         self.clock = pygame.time.Clock()
-        self.tick = 60
+        self.tick = 15
         self.last_time = time.time()
         self.zoom_toggle = 1
         pygame.font.init()
@@ -45,24 +45,26 @@ class Controller:
 
         #start_menu
         
+        wikiimage_offset = [-self.center_w/1.4,-self.center_h/1.7]
         start_button_offset = [-self.center_w/1.4,0]
         start_exit_button_offset = [-self.center_w/1.4,200]
 
-        start_offsets = [start_button_offset,start_exit_button_offset]
+        start_offsets = [wikiimage_offset, start_button_offset,start_exit_button_offset]
         for i in start_offsets:
             i[0] += self.center_w
             i[1] += self.center_h
         
+        self.wikiimage = Animatable2d.Object(["assets/logo_frame0000.png","assets/logo_frame0001.png","assets/logo_frame0002.png","assets/logo_frame0003.png","assets/logo_frame0004.png", "assets/logo_frame0005.png"],5,5,wikiimage_offset[0],wikiimage_offset[1])
         self.start_background = Animatable2d.Object(["assets/start_background.png"], self.display_w, self.display_h,0,0, False)
         self.start_button = Animatable2d.Object(["assets/start_button.png","assets/start_button1.png"],5,5,start_button_offset[0],start_button_offset[1])
         self.start_exit_button = Animatable2d.Object(["assets/exit_button.png","assets/exit_button1.png"],5,5,start_exit_button_offset[0], start_exit_button_offset[1])
 
         self.start_group = pygame.sprite.Group()
-        self.start_group.add(self.start_button, self.start_exit_button)
+        self.start_group.add(self.wikiimage, self.start_button, self.start_exit_button)
 
         #game_screen
-        question_button_offset_left = [-150,200]
-        question_button_offset_right = [150,200]
+        question_button_offset_left = [-self.center_w/2,self.center_h/1.8]
+        question_button_offset_right = [self.center_w/2,self.center_h/1.8]
         
         game_offsets = [question_button_offset_left, question_button_offset_right]
         for i in game_offsets:
@@ -70,8 +72,8 @@ class Controller:
             i[1] += self.center_h
 
         self.game_background = Animatable2d.Object(["assets/game_background.png"], self.display_w, self.display_h,0,0,False)
-        self.question_button_left = Animatable2d.Object(["assets/guess_button.png","assets/guess_button1.png"], 1, 1,question_button_offset_left[0],question_button_offset_left[1])
-        self.question_button_right = Animatable2d.Object(["assets/guess_button.png","assets/guess_button1.png"], 1, 1,question_button_offset_right[0],question_button_offset_right[1])
+        self.question_button_left = Animatable2d.Object(["assets/guess_button.png","assets/guess_button1.png"], 5, 5,question_button_offset_left[0],question_button_offset_left[1])
+        self.question_button_right = Animatable2d.Object(["assets/guess_button.png","assets/guess_button1.png"], 5, 5,question_button_offset_right[0],question_button_offset_right[1])
         self.button_click_delta = 0
 
         self.caticon = pygame.image.load("assets/Caticon.png")       
@@ -133,6 +135,7 @@ class Controller:
             self.window.blit(self.display, (0,0))
             pygame.display.update()
             self.clock.tick(self.tick)
+            self.wikiimage.nextFrame()
 
     def game_screen_loop(self, ans = 1, start1 = "cat", start2 = "dog"):
 
