@@ -45,8 +45,8 @@ class Controller:
 
         #start_menu
         
-        start_button_offset = [-self.center_w/1.8,0]
-        start_exit_button_offset = [-self.center_w/1.8,200]
+        start_button_offset = [-self.center_w/1.4,0]
+        start_exit_button_offset = [-self.center_w/1.4,200]
 
         start_offsets = [start_button_offset,start_exit_button_offset]
         for i in start_offsets:
@@ -54,8 +54,8 @@ class Controller:
             i[1] += self.center_h
         
         self.start_background = Animatable2d.Object(["assets/start_background.png"], self.display_w, self.display_h,0,0, False)
-        self.start_button = Animatable2d.Object(["assets/start_button.png","assets/start_button1.png"],1,1,start_button_offset[0],start_button_offset[1])
-        self.start_exit_button = Animatable2d.Object(["assets/exit_button.png","assets/exit_button1.png"],1,1,start_exit_button_offset[0], start_exit_button_offset[1])
+        self.start_button = Animatable2d.Object(["assets/start_button.png","assets/start_button1.png"],5,5,start_button_offset[0],start_button_offset[1])
+        self.start_exit_button = Animatable2d.Object(["assets/exit_button.png","assets/exit_button1.png"],5,5,start_exit_button_offset[0], start_exit_button_offset[1])
 
         self.start_group = pygame.sprite.Group()
         self.start_group.add(self.start_button, self.start_exit_button)
@@ -70,8 +70,8 @@ class Controller:
             i[1] += self.center_h
 
         self.game_background = Animatable2d.Object(["assets/game_background.png"], self.display_w, self.display_h,0,0,False)
-        self.question_button_left = Animatable2d.Object(["assets/guess_button1.png","assets/guess_button2.png"], 1, 1,question_button_offset_left[0],question_button_offset_left[1])
-        self.question_button_right = Animatable2d.Object(["assets/guess_button1.png","assets/guess_button2.png"], 1, 1,question_button_offset_right[0],question_button_offset_right[1])
+        self.question_button_left = Animatable2d.Object(["assets/guess_button.png","assets/guess_button1.png"], 1, 1,question_button_offset_left[0],question_button_offset_left[1])
+        self.question_button_right = Animatable2d.Object(["assets/guess_button.png","assets/guess_button1.png"], 1, 1,question_button_offset_right[0],question_button_offset_right[1])
         self.button_click_delta = 0
 
         self.caticon = pygame.image.load("assets/Caticon.png")       
@@ -96,13 +96,13 @@ class Controller:
         func.update(txt)
         func.render()
 
-    def mainloop(self, ans, start1, start2):
+    def mainloop(self):
 
         while True:
             if (self.STATE == "start"):
                 self.start_menu_loop()
             elif (self.STATE == "game"):
-                self.game_screen_loop(ans, start1, start2)
+                self.game_screen_loop()
             elif (self.STATE == "end"):
                 self.end_screen_loop()
             elif (self.STATE == "quit"):
@@ -134,7 +134,7 @@ class Controller:
             pygame.display.update()
             self.clock.tick(self.tick)
 
-    def game_screen_loop(self, ans =1, start1 = "cat", start2 = "dog"):
+    def game_screen_loop(self, ans = 1, start1 = "cat", start2 = "dog"):
 
         print("THIS IS THE LOOP HAPPENING")
 
@@ -145,7 +145,7 @@ class Controller:
         # round_count = 1
 
         #name of the wiki pages:
-        page1 = start1 
+        page1 = start1
         page2 = start2
         #game_over = False
 
@@ -176,7 +176,7 @@ class Controller:
 
             if (round_count != 1 and self.health > 0 and self.correct < 5):
                 iteration += 1
-                self.display.blit(self.start_background.image, self.start_background.rect.center)
+                self.display.blit(self.game_background.image, self.game_background.rect.center)
                 self.game_group.draw(self.display)
                 self.window.blit(self.display, (0,0))
                 page1 = rand_links1
@@ -247,14 +247,14 @@ class Controller:
 
             if (self.health <= 0):
                 self.stats = TextDisplay.TextDisplay(self.display, text="", width = 27, x = self.center_w-135, y = self.center_h-240, fontsize=35)
-                self.display.blit(self.start_background.image, self.start_background.rect.center)
+                self.display.blit(self.game_background.image, self.game_background.rect.center)
                 self.game_group.draw(self.display)
                 self.window.blit(self.display, (0,0))
                 self.text_update(self.stats, "You Lose!"+ " "*(int((26-4)*3.2)) + "Health: " + str(self.health) + " "*(int(16*4.35)) + "Number Guessed"+" "*(int(12*3.2))+"Correctly:" + str(self.correct))
                 #self.STATE = "end"
             elif (self.correct >= 5):
                 self.stats = TextDisplay.TextDisplay(self.display, text="", width = 27, x = self.center_w-135, y = self.center_h-240, fontsize=35)
-                self.display.blit(self.start_background.image, self.start_background.rect.center)
+                self.display.blit(self.game_background.image, self.game_background.rect.center)
                 self.game_group.draw(self.display)
                 self.window.blit(self.display, (0,0))
                 self.text_update(self.stats, "You Win!" + " "*(int((26-3)*3.1)) + "Health: " + str(self.health) + " "*(int(16*4.35)) + "Number Guessed"+" "*(int(12*3.2))+"Correctly:" + str(self.correct))
