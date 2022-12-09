@@ -80,6 +80,8 @@ class Controller:
         self.question_button_right = Animatable2d.Object(["assets/guess_button1.png","assets/guess_button2.png"], 1, 1,question_button_offset_right[0],question_button_offset_right[1])
         self.button_click_delta = 0
 
+        self.caticon = pygame.image.load("assets/Caticon.png")       
+
         self.text_left= TextDisplay.TextDisplay(self.display, text="", maxlines = 17, x = self.center_w-self.center_w/2-140, y = self.center_h-240)
         self.text_right= TextDisplay.TextDisplay(self.display, text="", maxlines = 17, x = self.center_w+self.center_w/2-140, y = self.center_h-240)
 
@@ -262,6 +264,9 @@ class Controller:
                 self.game_group.draw(self.display)
                 self.window.blit(self.display, (0,0))
                 self.text_update(self.stats, "You Win!" + " "*(int((26-3)*3.1)) + "Health: " + str(self.health) + " "*(int(16*4.35)) + "Number Guessed"+" "*(int(12*3.2))+"Correctly:" + str(self.correct))
+                
+                self.window.blit(self.caticon,(50, 50))
+                pygame.display.update()                                     #CATICON!
 
 
             wiki1 = info.Wikipedia(page1.strip())
