@@ -61,36 +61,32 @@ class Controller:
         self.start_group.add(self.start_button, self.start_exit_button)
 
         #game_screen
-        window_offset_left = [-self.center_w/2,-self.center_h/4]
-        window_offset_right = [self.center_w/2,-self.center_h/4]
-        question_bar_offset = [0,200]
         question_button_offset_left = [-150,200]
         question_button_offset_right = [150,200]
         
-        game_offsets = [window_offset_left,window_offset_right, question_bar_offset, question_button_offset_left, question_button_offset_right]
+        game_offsets = [question_button_offset_left, question_button_offset_right]
         for i in game_offsets:
             i[0] += self.center_w
             i[1] += self.center_h
 
         self.game_background = Animatable2d.Object(["assets/game_background.png"], self.display_w, self.display_h,0,0,False)
-        self.window_left = Animatable2d.Object(["assets/question_window.png"], 1, 1,window_offset_left[0],window_offset_left[1])
-        self.window_right = Animatable2d.Object(["assets/question_window.png"], 1, 1,window_offset_right[0],window_offset_right[1])
-        self.question_bar = Animatable2d.Object(["assets/question_bar.png"], 1, 1,question_bar_offset[0],question_bar_offset[1])
         self.question_button_left = Animatable2d.Object(["assets/guess_button1.png","assets/guess_button2.png"], 1, 1,question_button_offset_left[0],question_button_offset_left[1])
         self.question_button_right = Animatable2d.Object(["assets/guess_button1.png","assets/guess_button2.png"], 1, 1,question_button_offset_right[0],question_button_offset_right[1])
         self.button_click_delta = 0
 
+        self.caticon = pygame.image.load("assets/Caticon.png")       
+
         self.text_left= TextDisplay.TextDisplay(self.display, text="", maxlines = 17, x = self.center_w-self.center_w/2-140, y = self.center_h-240)
         self.text_right= TextDisplay.TextDisplay(self.display, text="", maxlines = 17, x = self.center_w+self.center_w/2-140, y = self.center_h-240)
 
-        self.text_title1 = TextDisplay.TextDisplay(self.display, text="", x = self.center_w-self.center_w/2-140, y = self.center_h-340, fontsize=35)
-        self.text_title2 = TextDisplay.TextDisplay(self.display, text="", x = self.center_w+self.center_w/2-140, y = self.center_h-340, fontsize=35)
+        self.text_title1 = TextDisplay.TextDisplay(self.display, text="", lineheight=27, x = self.center_w-self.center_w/2-140, y = self.center_h-340, fontsize=35)
+        self.text_title2 = TextDisplay.TextDisplay(self.display, text="", lineheight=27, x = self.center_w+self.center_w/2-140, y = self.center_h-340, fontsize=35)
 
         self.stats = TextDisplay.TextDisplay(self.display, text="", width = 27, x = self.center_w-135, y = self.center_h-240, fontsize=20)
 
 
         self.game_group = pygame.sprite.Group()
-        self.game_group.add(self.window_left, self.window_right, self.question_bar, self.question_button_left, self.question_button_right)
+        self.game_group.add(self.question_button_left, self.question_button_right)
 
         #end_screen
 
@@ -100,13 +96,13 @@ class Controller:
         func.update(txt)
         func.render()
 
-    def mainloop(self):
+    def mainloop(self, ans, start1, start2):
 
         while True:
             if (self.STATE == "start"):
                 self.start_menu_loop()
             elif (self.STATE == "game"):
-                self.game_screen_loop()
+                self.game_screen_loop(ans, start1, start2)
             elif (self.STATE == "end"):
                 self.end_screen_loop()
             elif (self.STATE == "quit"):
@@ -161,7 +157,7 @@ class Controller:
         #game.start_menu_loop()
 
         answer = ans
-        iteration = 0
+        iteration = 150
         round_count = 1
         proceed = False
         #self.set_text_left("this is test text this is test text this is test text this is test text this is test text this is test text")
@@ -170,12 +166,16 @@ class Controller:
         self.text_update(self.text_right, wiki2.summary())
         self.text_update(self.text_title1, page1)
         self.text_update(self.text_title2, page2)
-        self.text_update(self.stats, "Health: " + str(self.health) + " "*17 + "Number Guessed Correctly: " + str(self.correct) + " "*20)
+        self.text_update(self.stats, "Guess Which Wikipedia      Article has more links to other Articles!"+" "*26+"           Try to Guess right 5 times before losing all of your health!"+" "*((26-7) + 26)+"Health: " + str(self.health) + " "*16 + "Number Guessed Correctly:" + str(self.correct))
 
 
 
         while self.STATE == "game":
-            if (round_count != 1):
+            if (self.health < 0):
+                self.health = 0
+
+            if (round_count != 1 and self.health > 0 and self.correct < 5):
+                iteration += 1
                 self.display.blit(self.start_background.image, self.start_background.rect.center)
                 self.game_group.draw(self.display)
                 self.window.blit(self.display, (0,0))
@@ -187,7 +187,7 @@ class Controller:
                 self.text_update(self.text_right, wiki2.summary())
                 self.text_update(self.text_title1, page1)
                 self.text_update(self.text_title2, page2)
-                self.text_update(self.stats, "Health: " + str(self.health) + " "*18 + "Number Guessed Correctly: " + str(self.correct) + " "*20)
+                self.text_update(self.stats, "Guess Which Wikipedia      Article has more links to other Articles!"+" "*26+"           Try to Guess right 5 times before losing all of your health!"+" "*((26-7) + 26)+"Health: " + str(self.health) + " "*16 + "Number Guessed Correctly:" + str(self.correct))
                 #print(f"WIKI PAGE 1: {page1}")
                 #print(f"WIKI PAGE 2: {page2}")
 
@@ -199,35 +199,39 @@ class Controller:
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     #buttons
-                    if(self.question_button_right.rect.collidepoint(event.pos) and answer == 2):
+                    if(self.question_button_right.rect.collidepoint(event.pos) and answer == 2 and iteration > 7):
                         self.question_button_right.setFrame(1)
                         self.button_click_delta = 10
                         self.correct += 1
                         #self.STATE = None
                         print(self.STATE)
                         proceed = True
+                        iteration = 0
                         #Add guessing functionality
-                    elif(self.question_button_left.rect.collidepoint(event.pos) and answer == 1):
+                    elif(self.question_button_left.rect.collidepoint(event.pos) and answer == 1 and iteration > 7):
                         self.question_button_left.setFrame(1)
                         self.button_click_delta = 10
                         self.correct += 1
                         #self.STATE = None
                         print(self.STATE)
                         proceed = True
+                        iteration = 0
                         #Add guessing functionality
-                    elif(self.question_button_left.rect.collidepoint(event.pos) and answer == 2): 
+                    elif(self.question_button_left.rect.collidepoint(event.pos) and answer == 2 and iteration > 7): 
                         self.question_button_right.setFrame(1)
                         self.button_click_delta = 10
                         self.health -= 1
                         #self.STATE = None
                         proceed = True
+                        iteration = 0
                         print(self.STATE)
-                    elif(self.question_button_right.rect.collidepoint(event.pos) and answer == 1): 
+                    elif(self.question_button_right.rect.collidepoint(event.pos) and answer == 1 and iteration > 7): 
                         self.question_button_right.setFrame(1)
                         self.button_click_delta = 10
                         self.health -= 1
                         #self.STATE = None
                         proceed = True
+                        iteration = 0
                         print(self.STATE)
                 if event.type == pygame.QUIT:
                     self.STATE = "quit"
@@ -240,6 +244,24 @@ class Controller:
                 self.window.blit(self.display, (0,0))
                 pygame.display.update()
             self.clock.tick(self.tick)
+
+            if (self.health <= 0):
+                self.stats = TextDisplay.TextDisplay(self.display, text="", width = 27, x = self.center_w-135, y = self.center_h-240, fontsize=35)
+                self.display.blit(self.start_background.image, self.start_background.rect.center)
+                self.game_group.draw(self.display)
+                self.window.blit(self.display, (0,0))
+                self.text_update(self.stats, "You Lose!"+ " "*(int((26-4)*3.2)) + "Health: " + str(self.health) + " "*(int(16*4.35)) + "Number Guessed"+" "*(int(12*3.2))+"Correctly:" + str(self.correct))
+                #self.STATE = "end"
+            elif (self.correct >= 5):
+                self.stats = TextDisplay.TextDisplay(self.display, text="", width = 27, x = self.center_w-135, y = self.center_h-240, fontsize=35)
+                self.display.blit(self.start_background.image, self.start_background.rect.center)
+                self.game_group.draw(self.display)
+                self.window.blit(self.display, (0,0))
+                self.text_update(self.stats, "You Win!" + " "*(int((26-3)*3.1)) + "Health: " + str(self.health) + " "*(int(16*4.35)) + "Number Guessed"+" "*(int(12*3.2))+"Correctly:" + str(self.correct))
+                
+                self.window.blit(self.caticon,(50, 50))
+                pygame.display.update()                                     #CATICON!
+
 
             wiki1 = info.Wikipedia(page1.strip())
             wiki2 = info.Wikipedia(page2.strip()) #this is temp, get rid of strip
@@ -275,11 +297,12 @@ class Controller:
                 self.text_left= TextDisplay.TextDisplay(self.display, text="", maxlines = 17, x = self.center_w-self.center_w/2-140, y = self.center_h-240)
                 self.text_right= TextDisplay.TextDisplay(self.display, text="", maxlines = 17, x = self.center_w+self.center_w/2-140, y = self.center_h-240)
 
-                self.text_title1 = TextDisplay.TextDisplay(self.display, text="", width = 24, x = self.center_w-self.center_w/2-140, y = self.center_h-340, fontsize=35)
-                self.text_title2 = TextDisplay.TextDisplay(self.display, text="",width = 24, x = self.center_w+self.center_w/2-140, y = self.center_h-340, fontsize=35)
+                self.text_title1 = TextDisplay.TextDisplay(self.display, text="", width = 24, lineheight=27, x = self.center_w-self.center_w/2-140, y = self.center_h-340, fontsize=35)
+                self.text_title2 = TextDisplay.TextDisplay(self.display, text="",width = 24, lineheight=27, x = self.center_w+self.center_w/2-140, y = self.center_h-340, fontsize=35)
 
                 round_count += 1
                 proceed = False
+            print(iteration)
             
             
     def end_screen_loop(self):
