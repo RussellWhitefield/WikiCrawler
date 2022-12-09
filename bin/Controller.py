@@ -1,9 +1,9 @@
 import pygame, sys, time, csv
 import pandas as pd
 
-import Animatable2d
-import TextDisplay
-import info
+from bin import Animatable2d
+from bin import TextDisplay
+from bin import info
 
 '''
 Parts of the game
@@ -138,7 +138,7 @@ class Controller:
             pygame.display.update()
             self.clock.tick(self.tick)
 
-    def game_screen_loop(self, ans, start1, start2):
+    def game_screen_loop(self, ans =1, start1 = "cat", start2 = "dog"):
 
         print("THIS IS THE LOOP HAPPENING")
 
