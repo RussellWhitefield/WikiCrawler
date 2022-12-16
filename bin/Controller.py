@@ -149,16 +149,17 @@ class Controller:
         page1 = start1
         page2 = start2
 
-        wiki1 = info.Wikipedia("Cat")
-        wiki2 = info.Wikipedia("Dog")
+        wiki1 = info.Wikipedia(start1)
+        wiki2 = info.Wikipedia(start2)
+        wiki1_summary = wiki1.summary()
+        wiki2_summary = wiki2.summary()
 
         answer = ans
-        iteration = 150
         round_count = 1
         proceed = False
         
-        self.text_update(self.text_left, wiki1.summary())
-        self.text_update(self.text_right, wiki2.summary())
+        self.text_update(self.text_left, wiki1_summary)
+        self.text_update(self.text_right, wiki2_summary)
         self.text_update(self.text_title1, page1)
         self.text_update(self.text_title2, page2)
         self.text_update(self.stats, "Guess Which Wikipedia      Article has more links to other Articles!"+" "*26+"           Try to Guess right 5 times before losing all of your health!"+" "*((26-7) + 26)+"Health: " + str(self.health) + " "*16 + "Number Guessed Correctly:" + str(self.correct))
@@ -176,11 +177,10 @@ class Controller:
                 self.health = 0
 
             if (round_count != 1 and self.health > 0 and self.correct < 5):
-                iteration += 1
                 page1 = rand_links1
                 page2 = rand_links2
-                self.text_update(self.text_left, wiki1.summary())
-                self.text_update(self.text_right, wiki2.summary())
+                self.text_update(self.text_left, wiki1_summary)
+                self.text_update(self.text_right, wiki2_summary)
                 self.text_update(self.text_title1, page1)
                 self.text_update(self.text_title2, page2)
                 self.text_update(self.stats, "Guess Which Wikipedia      Article has more links to other Articles!"+" "*26+"           Try to Guess right 5 times before losing all of your health!"+" "*((26-7) + 26)+"Health: " + str(self.health) + " "*16 + "Number Guessed Correctly:" + str(self.correct))
@@ -200,33 +200,32 @@ class Controller:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     #Background Draw Function
                     self.display.blit(self.game_background.image, self.game_background.rect.center)
-                    #Guessing functionality
-                    if(self.question_button_right.rect.collidepoint(event.pos) and answer == 2 and iteration > 7):
+
+                    #Guessing button functionality
+                    if(self.question_button_right.rect.collidepoint(event.pos) and answer == 2):
                         self.question_button_right.setFrame(1)
                         self.button_click_delta = 5
                         self.correct += 1
                         proceed = True
-                        iteration = 0
                     
-                    elif(self.question_button_left.rect.collidepoint(event.pos) and answer == 1 and iteration > 7):
+                    elif(self.question_button_left.rect.collidepoint(event.pos) and answer == 1):
                         self.question_button_left.setFrame(1)
                         self.button_click_delta = 5
                         self.correct += 1
                         proceed = True
-                        iteration = 0
                         
-                    elif(self.question_button_left.rect.collidepoint(event.pos) and answer == 2 and iteration > 7): 
+                    elif(self.question_button_left.rect.collidepoint(event.pos) and answer == 2): 
                         self.question_button_right.setFrame(1)
                         self.button_click_delta = 5
                         self.health -= 1
                         proceed = True
-                        iteration = 0
-                    elif(self.question_button_right.rect.collidepoint(event.pos) and answer == 1 and iteration > 7): 
+
+                    elif(self.question_button_right.rect.collidepoint(event.pos) and answer == 1): 
                         self.question_button_right.setFrame(1)
                         self.button_click_delta = 10
                         self.health -= 1
                         proceed = True
-                        iteration = 0
+
                 if event.type == pygame.QUIT:
                     self.STATE = "quit"
             if debug:
@@ -260,6 +259,8 @@ class Controller:
                 #Selects a random link from one of the pages:
                 rand_links1 = wiki1.randomlinks(1)[0][0]
                 rand_links2 = wiki2.randomlinks(1)[0][0]
+                wiki1_summary = wiki1.summary()
+                wiki2_summary = wiki2.summary()
 
                 
 
@@ -305,12 +306,3 @@ class Controller:
     def exit_loop(self):
         pygame.display.quit()
         pygame.quit()
-
-"""
-game = Controller()
-game.set_text_right("pancakes and waffles are good with blueberries and strawberries")
-game.set_text_left("pancakes and waffles are good with blueberries and strawberries")
-
-
-game.mainloop()
-"""
