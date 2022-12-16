@@ -1,5 +1,6 @@
 import pygame, sys, time, csv
 import pandas as pd
+import random
 
 from bin import Animatable2d
 from bin import TextDisplay
@@ -65,7 +66,7 @@ class Controller:
         #game_screen
         question_button_offset_left = [-self.center_w/2,self.center_h/1.8]
         question_button_offset_right = [self.center_w/2,self.center_h/1.8]
-        caticon_offset = [-100,-50]
+        caticon_offset = [-200,-50]
 
         game_offsets = [question_button_offset_left, question_button_offset_right,caticon_offset]
         for i in game_offsets:
@@ -140,15 +141,14 @@ class Controller:
             self.clock.tick(self.tick)
             self.wikiimage.nextFrame()
 
-    def game_screen_loop(self, ans = 1, start1 = "cat", start2 = "dog"):
-        # self.health: lives = 3 
-        # self.correct: num_correct = 0
-        # round_count = 1
+    def game_screen_loop(self, ans = 1):
+
+        starting_topics = ["law","legal system","medical science","biology","game design","virtual reality", "artificial intelligence"]
+        start1 = random.choice(starting_topics)
+        starting_topics.remove(start1)
+        start2 = random.choice(starting_topics)
 
         #name of the wiki pages:
-        page1 = start1
-        page2 = start2
-
         wiki1 = info.Wikipedia(start1)
         wiki2 = info.Wikipedia(start2)
         wiki1_summary = wiki1.summary()
@@ -160,14 +160,20 @@ class Controller:
         
         self.text_update(self.text_left, wiki1_summary)
         self.text_update(self.text_right, wiki2_summary)
-        self.text_update(self.text_title1, page1)
-        self.text_update(self.text_title2, page2)
+        self.text_update(self.text_title1, start1)
+        self.text_update(self.text_title2, start2)
         self.text_update(self.stats, "Guess Which Wikipedia      Article has more links to other Articles!"+" "*26+"           Try to Guess right 5 times before losing all of your health!"+" "*((26-7) + 26)+"Health: " + str(self.health) + " "*16 + "Number Guessed Correctly:" + str(self.correct))
 
         debug = True
 
         #Background Draw Function
         self.display.blit(self.game_background.image, self.game_background.rect.center)
+        self.game_group.draw(self.display)
+        self.text_left.render()
+        self.text_right.render()
+        self.text_title1.render()
+        self.text_title2.render()
+        self.stats.render()
 
         while self.STATE == "game":
             if debug:
@@ -175,17 +181,6 @@ class Controller:
                 
             if (self.health < 0):
                 self.health = 0
-
-            if (round_count != 1 and self.health > 0 and self.correct < 5):
-                page1 = rand_links1
-                page2 = rand_links2
-                self.text_update(self.text_left, wiki1_summary)
-                self.text_update(self.text_right, wiki2_summary)
-                self.text_update(self.text_title1, page1)
-                self.text_update(self.text_title2, page2)
-                self.text_update(self.stats, "Guess Which Wikipedia      Article has more links to other Articles!"+" "*26+"           Try to Guess right 5 times before losing all of your health!"+" "*((26-7) + 26)+"Health: " + str(self.health) + " "*16 + "Number Guessed Correctly:" + str(self.correct))
-                #print(f"WIKI PAGE 1: {page1}")
-                #print(f"WIKI PAGE 2: {page2}")
 
             if self.button_click_delta == 0:
                 self.question_button_right.setFrame(0)
@@ -198,10 +193,7 @@ class Controller:
             #Button handling
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    #Background Draw Function
-                    self.display.blit(self.game_background.image, self.game_background.rect.center)
-
-                    #Guessing button functionality
+                    #Guessing functionality
                     if(self.question_button_right.rect.collidepoint(event.pos) and answer == 2):
                         self.question_button_right.setFrame(1)
                         self.button_click_delta = 5
@@ -213,7 +205,7 @@ class Controller:
                         self.button_click_delta = 5
                         self.correct += 1
                         proceed = True
-                        
+
                     elif(self.question_button_left.rect.collidepoint(event.pos) and answer == 2): 
                         self.question_button_right.setFrame(1)
                         self.button_click_delta = 5
@@ -252,17 +244,19 @@ class Controller:
             if (proceed):
                 print(f"Health: {self.health}")
                 print(f"Num Correct: {self.correct}")
-
-                links1 = wiki1.links()[1]
-                links2 = wiki2.links()[1]
+                
+                if len(wiki1.links())>1:
+                    links1 = wiki1.links()[1]
+                else:
+                    links1 = info.Wikipedia(random.choice(starting_topics)).links()[0]
+                if len(wiki2.links())>1:
+                    links2 = wiki1.links()[1]
+                else:
+                    links2 = info.Wikipedia(random.choice(starting_topics)).links()[0]
 
                 #Selects a random link from one of the pages:
                 rand_links1 = wiki1.randomlinks(1)[0][0]
                 rand_links2 = wiki2.randomlinks(1)[0][0]
-                wiki1_summary = wiki1.summary()
-                wiki2_summary = wiki2.summary()
-
-                
 
                 #produces what the correct answer is:
                 answer = None
@@ -276,6 +270,14 @@ class Controller:
                 rand_links1 = rand_links1[6:]
                 rand_links2 = rand_links2[6:]
 
+                #Assigns new articles to wiki class
+                wiki1 = info.Wikipedia(rand_links1)
+                wiki2 = info.Wikipedia(rand_links2)
+
+                #Writes new article summaries
+                wiki1_summary = wiki1.summary()
+                wiki2_summary = wiki2.summary()
+
                 self.text_left= TextDisplay.TextDisplay(self.display, text="", maxlines = 17, x = self.center_w-self.center_w/2-140, y = self.center_h-240)
                 self.text_right= TextDisplay.TextDisplay(self.display, text="", maxlines = 17, x = self.center_w+self.center_w/2-140, y = self.center_h-240)
 
@@ -284,16 +286,30 @@ class Controller:
 
                 round_count += 1
                 proceed = False
+
+                #New Article Text Updating
+                if (round_count != 1 and self.health > 0 and self.correct < 5):
+
+                    #Text updating
+                    self.text_update(self.text_left, wiki1_summary)
+                    self.text_update(self.text_right, wiki2_summary)
+                    self.text_update(self.text_title1, rand_links1)
+                    self.text_update(self.text_title2, rand_links2)
+                    self.text_update(self.stats, "Guess Which Wikipedia      Article has more links to other Articles!"+" "*26+"           Try to Guess right 5 times before losing all of your health!"+" "*((26-7) + 26)+"Health: " + str(self.health) + " "*16 + "Number Guessed Correctly:" + str(self.correct))
+
+                    #Background Draw Function
+                    self.display.blit(self.game_background.image, self.game_background.rect.center)
+                    #Text rendering
+                    self.text_left.render()
+                    self.text_right.render()
+                    self.text_title1.render()
+                    self.text_title2.render()
+                    self.stats.render()
             if debug:
                 print("Proceed complete")
 
             #Sprite Draw functions
             self.game_group.draw(self.display)
-            self.text_left.render()
-            self.text_right.render()
-            self.text_title1.render()
-            self.text_title2.render()
-            self.stats.render()
             self.window.blit(self.display, (0,0))
             pygame.display.update()
             self.clock.tick(self.tick)
